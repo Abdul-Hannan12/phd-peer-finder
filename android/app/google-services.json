@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "584684159693",
+    "project_id": "phd-peer",
+    "storage_bucket": "phd-peer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584684159693:android:fa04aca3561c41b9761f84",
+        "android_client_info": {
+          "package_name": "com.example.phd_peer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584684159693-tsraatbs28s9urf27op6fki30r951bpk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlYOTPA_Tju2HrzQIdjDGy52QHPAxpneg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584684159693-db08cu7he900o78upagvkl6218km22k2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "584684159693-24qmfko1mumerk5s3km9b3f6e37348m8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.peerfinder01"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

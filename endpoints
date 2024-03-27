@@ -1,0 +1,34 @@
+User Authentication:
+Use Google Firebase Authentication for user login.
+Example Flutter code for authentication will be shared separately.
+Ensure to save the received token for subsequent interactions with the backend.
+
+Getting User Data:
+Utilize the GetUserProfile endpoint to retrieve user data.
+Endpoint: GET "/user/:uid"
+Note: If the response is "no user present", it implies the token is valid, but the user needs to complete their profile.
+
+Completing/Updating Profile:
+Send data to the UserUpdateProfile endpoint for first-time profile completion or updates.
+Endpoint: POST "/user/profile/update"
+Await a successful response confirmation.
+
+Start Call:
+Use LogCallRequest to initiate a call.
+Endpoint: POST "/callrequest"
+Expect a token in the response or a push notification within 5 minutes indicating a user match.
+
+Call Handling:
+Utilize the AGORA SDK token received to start a call between users.
+Ensure the call duration does not exceed 5 minutes; this is enforced by both the back-end and should be by the front-end.
+
+Matching:
+Submit match responses using the MatchDecisionHandler.
+Endpoint: POST "/matchwith"
+
+Messaging:
+Implement Google Firebase Real-Time Updates to subscribe to the "chat" collection for new messages.
+Use the GetChat endpoint to recover all previous messages.
+Endpoint: GET "/chat"
+To send a message, use the SendMessage endpoint.
+Endpoint: POST "/chat/message"
