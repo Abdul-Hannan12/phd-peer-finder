@@ -179,7 +179,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         boxContainer(
-                            onPressed: () {},
+                            onPressed: () async {
+                              AuthService authService = AuthService();
+                              bool success =
+                                  await authService.loginWithGoogle();
+                              if (success) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RootScreen(),
+                                  ),
+                                );
+                              }
+                            },
                             imageIcon: "google.png",
                             title: "Continue with google"),
                         boxContainer(

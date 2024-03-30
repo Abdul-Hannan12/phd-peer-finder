@@ -60,11 +60,6 @@ class HomeScreen extends StatelessWidget {
                           text: "Start Chat"),
                     ]),
                   )
-
-                  // Text(
-                  //   "data",
-                  //   style: style22,
-                  // ),
                 ],
               ),
             ),
