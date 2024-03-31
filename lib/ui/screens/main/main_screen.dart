@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:phd_peer/core/constants/colors.dart';
+import 'package:phd_peer/core/constants/controllers.dart';
 import 'package:phd_peer/core/constants/strings.dart';
 import 'package:phd_peer/core/constants/text_style.dart';
 import 'package:phd_peer/ui/screens/main/main_view_model.dart';
@@ -20,15 +21,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   // late AnimationController _controller;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _controller = AnimationController(
-  //     vsync: this,
-  //     duration: const Duration(seconds: 4),
-  //   );
-  //   _controller.repeat(); // Start the animation
-  // }
+  String? agoraToken;
+
+  @override
+  void initState() {
+    super.initState();
+    callController.getCallToken();
+  }
 
   // @override
   // void dispose() {

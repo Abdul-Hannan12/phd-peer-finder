@@ -2,10 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phd_peer/core/constants/colors.dart';
+import 'package:phd_peer/core/controllers/call_controller.dart';
 import 'package:phd_peer/ui/screens/splash_screen.dart';
 import 'core/constants/hive_boxes.dart';
 import 'firebase_options.dart';
@@ -14,6 +17,7 @@ void main() async {
   // await ScreenUtil.ensureScreenSize();
   WidgetsFlutterBinding.ensureInitialized();
   // await setupLocator();
+  Get.lazyPut(() => CallController(), fenix: true);
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(appDocumentDirectory.path);
   userBox = await Hive.openBox(userBoxName);
@@ -36,7 +40,7 @@ class MyApp extends StatelessWidget {
       ),
       builder: (context, child) => GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'PHD Peer Finder',
         theme: ThemeData(
           bottomSheetTheme: const BottomSheetThemeData(
               surfaceTintColor: Colors.transparent,

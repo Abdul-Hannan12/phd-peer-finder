@@ -6,7 +6,7 @@ String url(String endpoint) {
 
 String getUserApiUrl = url("/user/"); //:uid
 String updateUserApiUrl = url("/user/profile/update");
-String callRequestApiUrl = url("/callrequest");
+String callRequestApiUrl = url("/call_request");
 String matchApiUrl = url("/matchwith");
 String getChatApiUrl = url("/chat");
 String sendMessageApiUrl = url("/chat/message");

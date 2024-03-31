@@ -56,6 +56,9 @@ class AuthService {
 
       await user?.sendEmailVerification();
 
+      String? token = await _auth.currentUser!.getIdToken();
+      await userBox.put('token', token);
+
       return true;
     } catch (e) {
       print('Error signing up with Google: $e');
@@ -93,6 +96,9 @@ class AuthService {
       );
 
       await _auth.signInWithCredential(credential);
+
+      String? token = await _auth.currentUser!.getIdToken();
+      await userBox.put('token', token);
 
       return true;
     } catch (e) {
