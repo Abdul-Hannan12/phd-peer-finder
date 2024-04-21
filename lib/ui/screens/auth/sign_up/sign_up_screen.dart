@@ -117,16 +117,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             style: style14,
                             obscureText: model.isVisible,
                             decoration: authFieldDecoration.copyWith(
-                                hintText: 'Password',
-                                suffixIconColor: whiteColor,
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    model.toggleVisibilty();
-                                  },
-                                  child: Icon(model.isVisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility),
-                                )),
+                              hintText: 'Password',
+                              suffixIconColor: whiteColor,
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  model.toggleVisibilty();
+                                },
+                                child: Icon(model.isVisible
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                              ),
+                            ),
                           ),
                         ),
                         Padding(

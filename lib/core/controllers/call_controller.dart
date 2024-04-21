@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:phd_peer/data/services/call_service/call_service.dart';
 
@@ -17,14 +18,17 @@ class CallController extends GetxController {
 
   CallService _api = CallService();
 
-  Future<String?> getCallToken() async {
+  Future<String?> getCallDocumentId() async {
     try {
       final String authToken = userBox.get('token');
-      final String fcmToken = await getFcmToken() ?? '';
-      final res = await _api.logCallApi(authToken, fcmToken);
+      final res = await _api.logCallApi(authToken);
       print(res);
+      return res['callRequestDocumentID'];
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return e.toString();
     }
   }
 }

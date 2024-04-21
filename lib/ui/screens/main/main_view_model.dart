@@ -6,6 +6,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:phd_peer/core/constants/strings.dart';
 import 'package:phd_peer/core/others/base_view_model.dart';
 import 'package:phd_peer/ui/screens/active_call/active_call_screen.dart';
+import 'package:phd_peer/ui/screens/user_not_found/user_not_found_screen.dart';
 
 class MainViewModel extends BaseViewModel {
   Duration elapsedTime = Duration.zero;
@@ -22,7 +23,7 @@ class MainViewModel extends BaseViewModel {
       elapsedTime += oneSecond;
       notifyListeners();
       // Check if elapsed time is greater than or equal to 3 seconds
-      if (elapsedTime.inSeconds >= 3) {
+      if (elapsedTime.inMinutes >= 5) {
         // Stop the timer
         timer.cancel();
         // Navigate to another screen
@@ -34,8 +35,9 @@ class MainViewModel extends BaseViewModel {
 
   // Function to navigate to another screen
   void navigateToAnotherScreen() {
-    Get.to(() => ActiveCallScreen(
-        userImg: "$dynamicAssets/user2.png", userName: 'Awais'));
+    // Get.to(() => ActiveCallScreen(
+    //     userImg: "$dynamicAssets/user2.png", userName: 'Awais'));
+    Get.to(() => const UserNotFoundScreen());
   }
 
   static const List<Color> gradientColors = [

@@ -74,15 +74,16 @@ class NetworkApiServices extends BaseApiServices {
     if (res['success'] == 1) return res;
     switch (response.statusCode) {
       case 200:
+      case 201:
         return res;
       case 400:
-        throw BadRequestException(res['message']);
+        throw BadRequestException('');
       case 401:
-        throw UnauthorizedException(res['message']);
+        throw UnauthorizedException('');
       case 404:
-        throw BadRequestException(res['message']);
+        throw BadRequestException('');
       case 500:
-        throw ServerException(res['message']);
+        throw ServerException('');
       default:
         throw GeneralException('${response.statusCode}');
     }
