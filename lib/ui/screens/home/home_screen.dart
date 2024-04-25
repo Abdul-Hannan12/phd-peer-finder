@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:phd_peer/core/constants/colors.dart';
 import 'package:phd_peer/core/constants/strings.dart';
 import 'package:phd_peer/data/services/auth_service/auth_service.dart';

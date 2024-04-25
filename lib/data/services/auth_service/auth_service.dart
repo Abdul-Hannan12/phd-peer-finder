@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:phd_peer/core/constants/hive_boxes.dart';
 
@@ -29,7 +30,9 @@ class AuthService {
 
       return true;
     } catch (e) {
-      print('Error signing up: $e');
+      if (kDebugMode) {
+        print('Error signing up: $e');
+      }
       return false;
     }
   }
@@ -61,7 +64,9 @@ class AuthService {
 
       return true;
     } catch (e) {
-      print('Error signing up with Google: $e');
+      if (kDebugMode) {
+        print('Error signing up with Google: $e');
+      }
       return false;
     }
   }
@@ -78,7 +83,9 @@ class AuthService {
 
       return true;
     } catch (e) {
-      print('Error logging in: $e');
+      if (kDebugMode) {
+        print('Error logging in: $e');
+      }
       return false;
     }
   }
@@ -102,7 +109,9 @@ class AuthService {
 
       return true;
     } catch (e) {
-      print('Error logging in with Google: $e');
+      if (kDebugMode) {
+        print('Error logging in with Google: $e');
+      }
       return false;
     }
   }
@@ -114,7 +123,9 @@ class AuthService {
       await userBox.clear();
       return true;
     } catch (e) {
-      print('Error signing out: $e');
+      if (kDebugMode) {
+        print('Error signing out: $e');
+      }
       return false;
     }
   }

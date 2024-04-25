@@ -16,19 +16,19 @@ class CallController extends GetxController {
     return fcmToken;
   }
 
-  CallService _api = CallService();
+  final CallService _api = CallService();
 
-  Future<String?> getCallDocumentId() async {
+  Future<Map<String, dynamic>?> getCallDocumentIdResponse() async {
     try {
       final String authToken = userBox.get('token');
       final res = await _api.logCallApi(authToken);
       print(res);
-      return res['callRequestDocumentID'];
+      return res;
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
-      return e.toString();
+      return null;
     }
   }
 }

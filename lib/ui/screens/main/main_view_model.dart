@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:phd_peer/core/constants/strings.dart';
 import 'package:phd_peer/core/others/base_view_model.dart';
-import 'package:phd_peer/ui/screens/active_call/active_call_screen.dart';
 import 'package:phd_peer/ui/screens/user_not_found/user_not_found_screen.dart';
 
 class MainViewModel extends BaseViewModel {

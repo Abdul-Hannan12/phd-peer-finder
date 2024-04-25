@@ -21,12 +21,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late Future<String?> callDocumentIdFuture;
+  late Future<Map<String, dynamic>?> callDocumentIdFuture;
 
   @override
   void initState() {
     super.initState();
-    callDocumentIdFuture = callController.getCallDocumentId();
+    callDocumentIdFuture = callController.getCallDocumentIdResponse();
   }
 
   @override
@@ -34,7 +34,8 @@ class _MainScreenState extends State<MainScreen> {
     return ChangeNotifierProvider(
       create: (context) => MainViewModel(),
       child: Consumer<MainViewModel>(
-        builder: (context, model, child) => FutureBuilder<String?>(
+        builder: (context, model, child) =>
+            FutureBuilder<Map<String, dynamic>?>(
           future: callDocumentIdFuture,
           builder: (context, futureSnapshot) {
             if (futureSnapshot.connectionState == ConnectionState.waiting) {
@@ -43,157 +44,214 @@ class _MainScreenState extends State<MainScreen> {
                 child: CircularProgressIndicator(),
               ));
             } else if (futureSnapshot.hasData) {
-              String requestDocumentId = futureSnapshot.data!;
-              return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance
-                    .collection('callPool')
-                    .doc(requestDocumentId)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Scaffold(
-                        body: Center(child: Text('Error: ${snapshot.error}')));
-                  } else if (snapshot.hasData) {
-                    print("---------------------");
-                    Map<String, dynamic> data = snapshot.data!.data()!;
-                    if (data['matchFound'] == true) {
-                      return ActiveCallScreen();
-                    } else {
-                      return Scaffold(
-                        appBar: _appBar(),
-                        body: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 80.0),
-                                child: TweenAnimationBuilder<double>(
-                                  duration: const Duration(
-                                      minutes:
-                                          5), // Increase the duration for slower rotation
-                                  tween: Tween(begin: 0.0, end: 100.0),
-                                  builder: (_, double value, __) {
-                                    return Stack(
-                                      alignment: Alignment.center,
+              if (futureSnapshot.data!['token'] == null) {
+                String requestDocumentId =
+                    futureSnapshot.data!['callRequestDocumentID'];
+                return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    future: FirebaseFirestore.instance
+                        .collection('callPool')
+                        .doc(requestDocumentId)
+                        .get(),
+                    builder: (context, idsnapshot) {
+                      if (idsnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else if (idsnapshot.hasError) {
+                        return Scaffold(
+                          body: Center(
+                            child: Text(
+                              idsnapshot.error.toString(),
+                              style: const TextStyle(
+                                color: primaryColor,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        final Map<String, dynamic> idData =
+                            idsnapshot.data!.data()!;
+                        bool matchFound = idData['matchFound'];
+                        if (matchFound) {
+                          return ActiveCallScreen();
+                        } else {
+                          return StreamBuilder<
+                              DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('callPool')
+                                .doc(requestDocumentId)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Scaffold(
+                                    body: Center(
+                                        child:
+                                            Text('Error: ${snapshot.error}')));
+                              } else if (snapshot.hasData) {
+                                Map<String, dynamic> data =
+                                    snapshot.data!.data()!;
+                                if (data['matchFound'] == true) {
+                                  return ActiveCallScreen();
+                                } else {
+                                  return Scaffold(
+                                    appBar: _appBar(),
+                                    body: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 80.0),
+                                            child:
+                                                TweenAnimationBuilder<double>(
+                                              duration: const Duration(
+                                                  minutes:
+                                                      5), // Increase the duration for slower rotation
+                                              tween:
+                                                  Tween(begin: 0.0, end: 100.0),
+                                              builder: (_, double value, __) {
+                                                return Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    Transform.rotate(
+                                                      angle: value *
+                                                          2 *
+                                                          10, // 2 * pi is a full rotation
+                                                      child:
+                                                          CircularPercentIndicator(
+                                                        startAngle: 100,
+                                                        circularStrokeCap:
+                                                            CircularStrokeCap
+                                                                .round,
+                                                        linearGradient:
+                                                            gradient1,
+                                                        radius: 150.0,
+                                                        lineWidth: 20.0,
+                                                        animation: true,
+                                                        percent: 0.80,
+                                                        animationDuration: 1800,
+                                                        backgroundColor:
+                                                            backgoundColor,
+                                                      ),
+                                                    ),
+                                                    Image.asset(
+                                                      "$logoIconsAssets/logo.png",
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          Text(
+                                            '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                                            style: style18,
+                                          ),
+                                          Text(
+                                            'Estimated Match Time: 08:47',
+                                            style: style18.copyWith(
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          button(
+                                            text: "Get a Boost",
+                                            onPressed: () {
+                                              model.startTimer();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                return Scaffold(
+                                  appBar: _appBar(),
+                                  body: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Transform.rotate(
-                                          angle: value *
-                                              2 *
-                                              10, // 2 * pi is a full rotation
-                                          child: CircularPercentIndicator(
-                                            startAngle: 100,
-                                            circularStrokeCap:
-                                                CircularStrokeCap.round,
-                                            linearGradient: gradient1,
-                                            radius: 150.0,
-                                            lineWidth: 20.0,
-                                            animation: true,
-                                            percent: 0.80,
-                                            animationDuration: 1800,
-                                            backgroundColor: backgoundColor,
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 80.0),
+                                          child: TweenAnimationBuilder<double>(
+                                            duration: const Duration(
+                                                minutes:
+                                                    5), // Increase the duration for slower rotation
+                                            tween:
+                                                Tween(begin: 0.0, end: 100.0),
+                                            builder: (_, double value, __) {
+                                              return Stack(
+                                                alignment: Alignment.center,
+                                                children: [
+                                                  Transform.rotate(
+                                                    angle: value *
+                                                        2 *
+                                                        10, // 2 * pi is a full rotation
+                                                    child:
+                                                        CircularPercentIndicator(
+                                                      startAngle: 100,
+                                                      circularStrokeCap:
+                                                          CircularStrokeCap
+                                                              .round,
+                                                      linearGradient: gradient1,
+                                                      radius: 150.0,
+                                                      lineWidth: 20.0,
+                                                      animation: true,
+                                                      percent: 0.80,
+                                                      animationDuration: 1800,
+                                                      backgroundColor:
+                                                          backgoundColor,
+                                                    ),
+                                                  ),
+                                                  Image.asset(
+                                                    "$logoIconsAssets/logo.png",
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           ),
                                         ),
-                                        Image.asset(
-                                          "$logoIconsAssets/logo.png",
+                                        Text(
+                                          '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                                          style: style18,
+                                        ),
+                                        Text(
+                                          'Estimated Match Time: 08:47',
+                                          style: style18.copyWith(
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        button(
+                                          text: "Get a Boost",
+                                          onPressed: () {
+                                            model.startTimer();
+                                          },
                                         ),
                                       ],
-                                    );
-                                  },
-                                ),
-                              ),
-                              Text(
-                                '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
-                                style: style18,
-                              ),
-                              Text(
-                                'Estimated Match Time: 08:47',
-                                style: style18.copyWith(
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              button(
-                                text: "Get a Boost",
-                                onPressed: () {
-                                  model.startTimer();
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  } else {
-                    return Scaffold(
-                      appBar: _appBar(),
-                      body: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 80.0),
-                              child: TweenAnimationBuilder<double>(
-                                duration: const Duration(
-                                    minutes:
-                                        5), // Increase the duration for slower rotation
-                                tween: Tween(begin: 0.0, end: 100.0),
-                                builder: (_, double value, __) {
-                                  return Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Transform.rotate(
-                                        angle: value *
-                                            2 *
-                                            10, // 2 * pi is a full rotation
-                                        child: CircularPercentIndicator(
-                                          startAngle: 100,
-                                          circularStrokeCap:
-                                              CircularStrokeCap.round,
-                                          linearGradient: gradient1,
-                                          radius: 150.0,
-                                          lineWidth: 20.0,
-                                          animation: true,
-                                          percent: 0.80,
-                                          animationDuration: 1800,
-                                          backgroundColor: backgoundColor,
-                                        ),
-                                      ),
-                                      Image.asset(
-                                        "$logoIconsAssets/logo.png",
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            Text(
-                              '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
-                              style: style18,
-                            ),
-                            Text(
-                              'Estimated Match Time: 08:47',
-                              style:
-                                  style18.copyWith(fontWeight: FontWeight.w500),
-                            ),
-                            button(
-                              text: "Get a Boost",
-                              onPressed: () {
-                                model.startTimer();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                },
-              );
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        }
+                      }
+                    });
+              } else {
+                return ActiveCallScreen();
+              }
             } else {
               return Scaffold(
                 body: Center(
                   child: Text(
                     "Couldn't Find User, ${futureSnapshot.error}",
-                    style: TextStyle(color: primaryColor),
+                    style: const TextStyle(color: primaryColor),
                   ),
                 ),
               );
