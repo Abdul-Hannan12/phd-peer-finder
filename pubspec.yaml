@@ -57,6 +57,8 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.2
   firebase_messaging: ^14.7.21
+  agora_rtc_engine: ^6.3.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

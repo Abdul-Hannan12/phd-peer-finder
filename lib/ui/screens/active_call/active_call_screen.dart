@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_brace_in_string_interps, must_be_immutable
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phd_peer/core/constants/strings.dart';
@@ -7,34 +5,58 @@ import 'package:phd_peer/core/constants/text_style.dart';
 import 'package:phd_peer/ui/custom_widgets/gradient_text/custom_gradient_text.dart';
 import 'package:phd_peer/ui/screens/active_call/active_call_view_model.dart';
 import 'package:phd_peer/ui/screens/root/root_screen.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class ActiveCallScreen extends StatelessWidget {
-  String? userImg;
-  String? userName;
+class ActiveCallScreen extends StatefulWidget {
+  // final String? userImg;
+  // final String? userName;
+  final String channelName;
+  final String token;
 
-  ActiveCallScreen({super.key, this.userImg, this.userName});
+  const ActiveCallScreen({
+    super.key,
+    // required this.userImg,
+    // required this.userName,
+    required this.channelName,
+    required this.token,
+  });
+
+  @override
+  State<ActiveCallScreen> createState() => _ActiveCallScreenState();
+}
+
+class _ActiveCallScreenState extends State<ActiveCallScreen> {
+  Future<void> initializeAgora() async {
+    await [Permission.microphone].request();
+    await createAgoraRtcEngine(sharedNativeHandle: );
+    await AgoraRtcEngine.create("YOUR_APP_ID");
+    await AgoraRtcEngine.enableVideo();
+    await AgoraRtcEngine.joinChannel(null, channelName, null, 0);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeAgora();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Initialize Agora here using channelName and token
+
     return ChangeNotifierProvider(
       create: (context) => ActiveCallViewModel(),
       child: Consumer<ActiveCallViewModel>(
         builder: (context, model, child) => Scaffold(
-          ///
-          /// App Bar
-          ///
           appBar: AppBar(
-              centerTitle: true,
-              title: CustomGradientText(
-                text: 'Active Call',
-                style: style22,
-              )),
-
-          ///
-          /// Start Body
-          ///
-
+            centerTitle: true,
+            title: CustomGradientText(
+              text: 'Active Call',
+              style: style22,
+            ),
+          ),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,13 +67,13 @@ class ActiveCallScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 60.r,
-                        backgroundImage: AssetImage("$userImg"),
+                        // backgroundImage: AssetImage("$userImg"),
+                        child: const Icon(Icons.person),
                       ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
+                      SizedBox(height: 10.h),
                       Text(
-                        "$userName",
+                        "User's Name",
+                        // "$userName",
                         style: style18.copyWith(fontSize: 16.sp),
                       ),
                     ],
@@ -64,57 +86,61 @@ class ActiveCallScreen extends StatelessWidget {
                       model.isCorrectClicked
                           ? Text(
                               model.getRemainingTime(),
-                              style:
-                                  style14.copyWith(fontWeight: FontWeight.w600),
+                              style: style14.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             )
                           : Text(
                               '00.00',
-                              style:
-                                  style14.copyWith(fontWeight: FontWeight.w600),
+                              style: style14.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                       Text(
                         "Time Remaining",
-                        style: style18.copyWith(fontWeight: FontWeight.w500),
+                        style: style18.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
+                      SizedBox(height: 20.h),
                       model.isCorrectClicked
                           ? const SizedBox()
                           : Text(
                               "Connect?",
                               style: style22,
                             ),
-                      SizedBox(
-                        height: 30.h,
-                      ),
+                      SizedBox(height: 30.h),
                       model.isCorrectClicked
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 callDetail(
-                                    scale: 4.0,
-                                    onPressed: () {},
-                                    img: "volume",
-                                    text: 'Volume'),
+                                  scale: 4.0,
+                                  onPressed: () {},
+                                  img: "volume",
+                                  text: 'Volume',
+                                ),
                                 callDetail(
-                                    onPressed: () {},
-                                    img: "voice",
-                                    scale: 4.0,
-                                    text: 'Mute'),
+                                  onPressed: () {},
+                                  img: "voice",
+                                  scale: 4.0,
+                                  text: 'Mute',
+                                ),
                                 callDetail(
-                                    onPressed: () {},
-                                    img: "block",
-                                    scale: 4.0,
-                                    text: 'Report/Block'),
+                                  onPressed: () {},
+                                  img: "block",
+                                  scale: 4.0,
+                                  text: 'Report/Block',
+                                ),
                                 callDetail(
-                                    onPressed: () {
-                                      model.updateCorrectClicked(false);
-                                    },
-                                    img: "phoneCall",
-                                    scale: 5.5,
-                                    text: 'End Call')
+                                  onPressed: () {
+                                    model.updateCorrectClicked(false);
+                                  },
+                                  img: "phoneCall",
+                                  scale: 5.5,
+                                  text: 'End Call',
+                                ),
                               ],
                             )
                           : Row(
@@ -123,12 +149,13 @@ class ActiveCallScreen extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const RootScreen(
-                                                  selectedScreen: 0,
-                                                )));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const RootScreen(
+                                          selectedScreen: 0,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: CircleAvatar(
                                     radius: 35.r,
@@ -144,12 +171,13 @@ class ActiveCallScreen extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const RootScreen(
-                                                  selectedScreen: 4,
-                                                )));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const RootScreen(
+                                          selectedScreen: 4,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: CircleAvatar(
                                     radius: 35.r,
@@ -161,7 +189,7 @@ class ActiveCallScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
                     ],
@@ -176,7 +204,11 @@ class ActiveCallScreen extends StatelessWidget {
   }
 }
 
-callDetail({onPressed, img, text, scale}) {
+Widget callDetail(
+    {required Function() onPressed,
+    required String img,
+    required String text,
+    required double scale}) {
   return Padding(
     padding: const EdgeInsets.only(left: 20.0),
     child: InkWell(
@@ -196,7 +228,7 @@ callDetail({onPressed, img, text, scale}) {
             ),
           ),
           Text(
-            "$text",
+            text,
             style: style12.copyWith(fontWeight: FontWeight.w600),
           ),
         ],

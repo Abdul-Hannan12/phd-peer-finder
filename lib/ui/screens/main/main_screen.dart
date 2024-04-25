@@ -48,126 +48,61 @@ class _MainScreenState extends State<MainScreen> {
                 String requestDocumentId =
                     futureSnapshot.data!['callRequestDocumentID'];
                 return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    future: FirebaseFirestore.instance
-                        .collection('callPool')
-                        .doc(requestDocumentId)
-                        .get(),
-                    builder: (context, idsnapshot) {
-                      if (idsnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Scaffold(
-                          body: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      } else if (idsnapshot.hasError) {
-                        return Scaffold(
-                          body: Center(
-                            child: Text(
-                              idsnapshot.error.toString(),
-                              style: const TextStyle(
-                                color: primaryColor,
-                              ),
+                  future: FirebaseFirestore.instance
+                      .collection('callPool')
+                      .doc(requestDocumentId)
+                      .get(),
+                  builder: (context, idsnapshot) {
+                    if (idsnapshot.connectionState == ConnectionState.waiting) {
+                      return const Scaffold(
+                        body: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    } else if (idsnapshot.hasError) {
+                      return Scaffold(
+                        body: Center(
+                          child: Text(
+                            idsnapshot.error.toString(),
+                            style: const TextStyle(
+                              color: primaryColor,
                             ),
                           ),
+                        ),
+                      );
+                    } else {
+                      final Map<String, dynamic> idData =
+                          idsnapshot.data!.data()!;
+                      bool matchFound = idData['matchFound'];
+                      if (matchFound) {
+                        String channel = idData['channel'];
+                        String token = idData['userId2Token'];
+                        return ActiveCallScreen(
+                          channelName: channel,
+                          token: token,
                         );
                       } else {
-                        final Map<String, dynamic> idData =
-                            idsnapshot.data!.data()!;
-                        bool matchFound = idData['matchFound'];
-                        if (matchFound) {
-                          return ActiveCallScreen();
-                        } else {
-                          return StreamBuilder<
-                              DocumentSnapshot<Map<String, dynamic>>>(
-                            stream: FirebaseFirestore.instance
-                                .collection('callPool')
-                                .doc(requestDocumentId)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Scaffold(
-                                    body: Center(
-                                        child:
-                                            Text('Error: ${snapshot.error}')));
-                              } else if (snapshot.hasData) {
-                                Map<String, dynamic> data =
-                                    snapshot.data!.data()!;
-                                if (data['matchFound'] == true) {
-                                  return ActiveCallScreen();
-                                } else {
-                                  return Scaffold(
-                                    appBar: _appBar(),
-                                    body: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 80.0),
-                                            child:
-                                                TweenAnimationBuilder<double>(
-                                              duration: const Duration(
-                                                  minutes:
-                                                      5), // Increase the duration for slower rotation
-                                              tween:
-                                                  Tween(begin: 0.0, end: 100.0),
-                                              builder: (_, double value, __) {
-                                                return Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    Transform.rotate(
-                                                      angle: value *
-                                                          2 *
-                                                          10, // 2 * pi is a full rotation
-                                                      child:
-                                                          CircularPercentIndicator(
-                                                        startAngle: 100,
-                                                        circularStrokeCap:
-                                                            CircularStrokeCap
-                                                                .round,
-                                                        linearGradient:
-                                                            gradient1,
-                                                        radius: 150.0,
-                                                        lineWidth: 20.0,
-                                                        animation: true,
-                                                        percent: 0.80,
-                                                        animationDuration: 1800,
-                                                        backgroundColor:
-                                                            backgoundColor,
-                                                      ),
-                                                    ),
-                                                    Image.asset(
-                                                      "$logoIconsAssets/logo.png",
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                          Text(
-                                            '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
-                                            style: style18,
-                                          ),
-                                          Text(
-                                            'Estimated Match Time: 08:47',
-                                            style: style18.copyWith(
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          button(
-                                            text: "Get a Boost",
-                                            onPressed: () {
-                                              model.startTimer();
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
+                        return StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: FirebaseFirestore.instance
+                              .collection('callPool')
+                              .doc(requestDocumentId)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Scaffold(
+                                  body: Center(
+                                      child: Text('Error: ${snapshot.error}')));
+                            } else if (snapshot.hasData) {
+                              Map<String, dynamic> data =
+                                  snapshot.data!.data()!;
+                              if (data['matchFound'] == true) {
+                                String channel = data['channel'];
+                                String token = data['userId2Token'];
+                                return ActiveCallScreen(
+                                  channelName: channel,
+                                  token: token,
+                                );
                               } else {
                                 return Scaffold(
                                   appBar: _appBar(),
@@ -238,13 +173,87 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 );
                               }
-                            },
-                          );
-                        }
+                            } else {
+                              return Scaffold(
+                                appBar: _appBar(),
+                                body: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 80.0),
+                                        child: TweenAnimationBuilder<double>(
+                                          duration: const Duration(
+                                              minutes:
+                                                  5), // Increase the duration for slower rotation
+                                          tween: Tween(begin: 0.0, end: 100.0),
+                                          builder: (_, double value, __) {
+                                            return Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                Transform.rotate(
+                                                  angle: value *
+                                                      2 *
+                                                      10, // 2 * pi is a full rotation
+                                                  child:
+                                                      CircularPercentIndicator(
+                                                    startAngle: 100,
+                                                    circularStrokeCap:
+                                                        CircularStrokeCap.round,
+                                                    linearGradient: gradient1,
+                                                    radius: 150.0,
+                                                    lineWidth: 20.0,
+                                                    animation: true,
+                                                    percent: 0.80,
+                                                    animationDuration: 1800,
+                                                    backgroundColor:
+                                                        backgoundColor,
+                                                  ),
+                                                ),
+                                                Image.asset(
+                                                  "$logoIconsAssets/logo.png",
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      Text(
+                                        '${model.elapsedTime.inMinutes}:${(model.elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                                        style: style18,
+                                      ),
+                                      Text(
+                                        'Estimated Match Time: 08:47',
+                                        style: style18.copyWith(
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      button(
+                                        text: "Get a Boost",
+                                        onPressed: () {
+                                          model.startTimer();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        );
                       }
-                    });
+                    }
+                  },
+                );
               } else {
-                return ActiveCallScreen();
+                String channel = futureSnapshot.data!['channel'];
+                String token = futureSnapshot.data!['token'];
+                return ActiveCallScreen(
+                  channelName: channel,
+                  token: token,
+                );
               }
             } else {
               return Scaffold(
