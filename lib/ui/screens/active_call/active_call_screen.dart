@@ -28,18 +28,38 @@ class ActiveCallScreen extends StatefulWidget {
 }
 
 class _ActiveCallScreenState extends State<ActiveCallScreen> {
+  String agoraAppId = "appID";
+  late RtcEngine engine;
   Future<void> initializeAgora() async {
     await [Permission.microphone].request();
-    await createAgoraRtcEngine(sharedNativeHandle: );
-    await AgoraRtcEngine.create("YOUR_APP_ID");
-    await AgoraRtcEngine.enableVideo();
-    await AgoraRtcEngine.joinChannel(null, channelName, null, 0);
+    engine = createAgoraRtcEngine();
+    await engine.initialize(RtcEngineContext(appId: agoraAppId));
+    await engine.enableAudio();
+    engine.registerEventHandler(
+      RtcEngineEventHandler(onJoinChannelSuccess: (connection, elapsed) {}),
+    );
+    await engine.startPreview();
+    await engine.joinChannel(
+      token: widget.token,
+      channelId: widget.channelName,
+      uid: /*widget.uid*/ 1,
+      options: const ChannelMediaOptions(
+        channelProfile: ChannelProfileType.channelProfileCommunication,
+      ),
+    );
   }
 
   @override
   void initState() {
     super.initState();
     initializeAgora();
+  }
+
+  @override
+  void dispose() {
+    engine.release();
+    engine.leaveChannel();
+    super.dispose();
   }
 
   @override
