@@ -28,7 +28,7 @@ class ActiveCallScreen extends StatefulWidget {
 }
 
 class _ActiveCallScreenState extends State<ActiveCallScreen> {
-  String agoraAppId = "appID";
+  String agoraAppId = "23c4f27e5dca45f9a2cfd2f3c49930ae";
   late RtcEngine engine;
   Future<void> initializeAgora() async {
     await [Permission.microphone].request();
